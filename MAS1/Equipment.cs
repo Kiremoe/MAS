@@ -29,7 +29,7 @@
             {
                 sum += Weapon.Value;
             }
-            foreach(Item item in _inventory)
+            foreach(Item item in GetItemsInBags())
             {
                 sum += item.Value;
             }
@@ -122,6 +122,11 @@
             }
             private List<Item> _items { get; }
 
+            public List<Item> GetItems()
+            {
+                return _items;
+            }
+
             public void AddItem(Item item)
             {
                 if(_items.Count < _capacity)
@@ -154,6 +159,7 @@
         {
             _bags.Add(new Bag(capacity));
         }
+
         public void AddItem(Item item)
         {
             foreach(Bag bag in _bags)
@@ -161,10 +167,20 @@
                 if(bag.Capacity > bag.GetNumOfItems())
                 {
                     bag.AddItem(item);
+                    return;
                 }
-                //TODO
             }
+            Console.WriteLine("There is no space in the bags");
         }
+        public List<Item> GetItemsInBags()
+        {
+            List<Item> result = new List<Item>();
+            foreach (Bag bag in _bags)
+            {
+                result.AddRange(bag.GetItems());
+            }
+            return result;
+        } 
 
         
 
@@ -177,11 +193,10 @@
             Boots = boots;
             Weapon = weapon;
             Character = character ?? throw new ArgumentNullException(nameof(character));
-            _inventory = new List<Item>();
-            if(inventory != null) { _inventory.AddRange(inventory); }
+            _bags = new List<Bag>();
             Equipments.Add(this);
         }
 
-        public Equipment(Character character) : this(null, null, null, null, null, null, character) { }
+        public Equipment(Character character) : this(null, null, null, null, null, character) { }
     }
 }

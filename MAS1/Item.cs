@@ -2,6 +2,8 @@
 {
     public class Item : IGamePiece
     {
+        public static List<Item> Items { get; set; } = new List<Item>();
+
         private int _id;
         public int Id
         {
@@ -14,16 +16,14 @@
             get { return _creationDate; }
         }
 
-        public static List<Item> Items { get; set; } = new List<Item>();
+        public string Name { get; }
+        public float Weight { get; }
+        public string? Description { get; }
 
-        public string Name { get; set; }
-        public float Weight { get; set; }
-        public string? Description { get; set; }
-
-        public int Value { get; set; }
+        public int Value { get; }
 
         public Equipment? Equipment { get; set; }
-        public EquipmentType Type { get; set; }
+        public EquipmentType Type { get; }
 
         public enum EquipmentType
         {

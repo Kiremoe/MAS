@@ -23,6 +23,8 @@
         }
         public string? Description { get; set; }
 
+        public List<Map> Maps { get; } //TODO czy to powinno być tak
+
         public Zone(string name, string? description)
         {
             int maxid = 0;
@@ -35,6 +37,7 @@
             Characters = new List<Character>();
             Name = name;
             Description = description;
+            Maps = new List<Map>();
             Zones.Add(this);
         }
     }
