@@ -1,4 +1,4 @@
-﻿namespace MAS1
+﻿namespace MAS2
 {
     public class CharacterQuest
     {
@@ -8,23 +8,11 @@
         public Character Character
         {
             get => _character;
-            set
-            {
-                _character = value ?? throw new ArgumentNullException(nameof(value));
-            }
         }
         private Quest _quest;
         public Quest Quest
         {
             get => _quest;
-            set
-            {
-                _quest = value ?? throw new ArgumentNullException(nameof(value));
-                if (!_quest.CharactersQuests.Contains(this))
-                {
-                    _quest.CharactersQuests.Add(this);
-                }
-            }
         }
 
         public QuestStatus Status { get; set; }
@@ -38,8 +26,10 @@
 
         public CharacterQuest(Character character, Quest quest, QuestStatus status)
         {
-            Character = character;
-            Quest = quest;
+            _character = character ?? throw new ArgumentNullException(nameof(character));
+            _quest = quest ?? throw new ArgumentNullException(nameof(_quest));
+            if (_character.FindCharactersQuests(_quest) == null) { _character.AddCharacterQuest(this); }
+            if (_quest.FindCharactersQuests(_character) == null) { _quest.AddCharacterQuest(this); }
             Status = status;
             CharactersQuests.Add(this);
         }

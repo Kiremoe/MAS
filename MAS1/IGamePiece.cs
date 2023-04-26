@@ -1,4 +1,4 @@
-﻿namespace MAS1
+﻿namespace MAS2
 {
     interface IGamePiece
     {

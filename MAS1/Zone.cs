@@ -1,4 +1,6 @@
-﻿namespace MAS1
+﻿using System.Collections.ObjectModel;
+
+namespace MAS2
 {
     public class Zone : IGamePiece
     {
@@ -17,13 +19,22 @@
             get => _name;
             set
             {
-                if (value == null) { throw new ArgumentNullException(nameof(value)); }
-                _name = value;
+                _name = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
         public string? Description { get; set; }
 
-        public List<Map> Maps { get; } //TODO czy to powinno być tak
+        private List<Map> _maps; 
+
+        public void AddMap(Map map)
+        {
+            if(map == null) { throw new ArgumentNullException(nameof(map)); }
+            if (_maps.Contains(map)) { throw new Exception("Zone is already in this map"); }
+            _maps.Add(map);
+            if(map.GetZone(this.Name) != this) { map.AddZone(this); }
+        }
+
+        public ReadOnlyCollection<Map> Maps => _maps.AsReadOnly();
 
         public Zone(string name, string? description)
         {
@@ -37,7 +48,7 @@
             Characters = new List<Character>();
             Name = name;
             Description = description;
-            Maps = new List<Map>();
+            _maps = new List<Map>();
             Zones.Add(this);
         }
     }

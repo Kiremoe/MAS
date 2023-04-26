@@ -1,4 +1,6 @@
-﻿namespace MAS1
+﻿using System.Collections.ObjectModel;
+
+namespace MAS2
 {
     public class Character : IGamePiece
     {
@@ -34,6 +36,8 @@
 
         private List<CharacterQuest> _charactersQuests { get; } // Asocjacja z atrybutem "CharacterQuest.QuestStatus" *-*
 
+        public ReadOnlyCollection<CharacterQuest> CharacterQuests => _charactersQuests.AsReadOnly();
+
         public CharacterQuest? FindCharactersQuests(Quest quest)
         {
             foreach (CharacterQuest characterQuest in _charactersQuests)
@@ -48,11 +52,19 @@
 
         public void AddQuest(Quest quest)
         {
-            if(FindCharactersQuests(quest) == null)
+            if(quest == null) { throw new ArgumentNullException(nameof(quest)); }
+            if(FindCharactersQuests(quest) != null) 
             {
-                Console.WriteLine("Character is already on this quest.");
+                Console.WriteLine("Character is already on this quest");
+                //throw new Exception("Character is already on this quest");
             }
             _charactersQuests.Add(new CharacterQuest(this, quest, CharacterQuest.QuestStatus.Claimed));
+        }
+
+        public void AddCharacterQuest(CharacterQuest characterQuest)
+        {
+            if (characterQuest == null) { throw new ArgumentNullException(nameof(characterQuest)); }
+            if (CharacterQuests.Contains(characterQuest)) { throw new Exception("Character has already this characterQuest"); }
         }
 
         public void CompleteQuest(Quest quest)
@@ -113,11 +125,11 @@
             }
             _id = maxid+1;
             _creationDate = DateTime.UtcNow;
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
             _experiencePoints = 0;
             Equipment = new Equipment(this);
             _charactersQuests = new List<CharacterQuest>();
-            Zone = zone;
+            _zone = zone ?? throw new ArgumentNullException(nameof(zone));
             Characters.Add(this);
         }
     }
