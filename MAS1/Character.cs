@@ -55,8 +55,8 @@ namespace MAS2
             if(quest == null) { throw new ArgumentNullException(nameof(quest)); }
             if(FindCharactersQuests(quest) != null) 
             {
-                Console.WriteLine("Character is already on this quest");
-                //throw new Exception("Character is already on this quest");
+                //Console.WriteLine("Character is already on this quest");
+                throw new Exception("Character is already on this quest");
             }
             _charactersQuests.Add(new CharacterQuest(this, quest, CharacterQuest.QuestStatus.Claimed));
         }

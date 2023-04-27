@@ -69,7 +69,7 @@ namespace MAS2
             _charactersQuests.Add(characterQuest);
         }
 
-        public Quest(string name, string? goal, string? description, int rewardValue, List<Item>? rewardItems, List<CharacterQuest> characterQuests)
+        public Quest(string name, string? goal, string? description, int rewardValue, List<Item>? rewardItems, List<CharacterQuest>? characterQuests)
         {
             int maxid = 0;
             foreach(Quest quest in Quests)
@@ -82,7 +82,7 @@ namespace MAS2
             Goal = goal;
             Description = description;
             _charactersQuests = new List<CharacterQuest>();
-            _charactersQuests.AddRange(characterQuests);
+            if(characterQuests != null) {  _charactersQuests.AddRange(characterQuests); }
             RewardValue = rewardValue;
             if(rewardItems != null)
             {
