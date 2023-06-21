@@ -1,25 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace MAS2
+namespace MAS2.GamePieces
 {
-    public class Character : IGamePiece
+    public abstract class Character : GamePiece
     {
-        public static List<Character> Characters { get; set; } = new List<Character>();
-
-        private int _id;
-
-        public int Id
-        {
-            get { return _id; }
-        }
-
-        private DateTime _creationDate;
-
-        public DateTime CreationDate
-        {
-            get { return _creationDate; }
-        }
-
         public string Name { get; set; }
 
         private int _experiencePoints;
@@ -31,12 +15,13 @@ namespace MAS2
         }
 
         public Equipment Equipment { get; }
+        public int EquipmentId { get; }
 
         public int Level => 1 + (int)Math.Pow(_experiencePoints, 1.0 / 10);
 
         private List<CharacterQuest> _charactersQuests { get; } // Asocjacja z atrybutem "CharacterQuest.QuestStatus" *-*
 
-        public ReadOnlyCollection<CharacterQuest> CharacterQuests => _charactersQuests.AsReadOnly();
+        public IReadOnlyCollection<CharacterQuest> CharacterQuests => _charactersQuests.AsReadOnly();
 
         public CharacterQuest? FindCharactersQuests(Quest quest)
         {
@@ -52,8 +37,8 @@ namespace MAS2
 
         public void AddQuest(Quest quest)
         {
-            if(quest == null) { throw new ArgumentNullException(nameof(quest)); }
-            if(FindCharactersQuests(quest) != null) 
+            if (quest == null) { throw new ArgumentNullException(nameof(quest)); }
+            if (FindCharactersQuests(quest) != null)
             {
                 //Console.WriteLine("Character is already on this quest");
                 throw new Exception("Character is already on this quest");
@@ -70,7 +55,7 @@ namespace MAS2
         public void CompleteQuest(Quest quest)
         {
             CharacterQuest? characterQuest = FindCharactersQuests(quest);
-            if(characterQuest == null)
+            if (characterQuest == null)
             {
                 Console.WriteLine("Character is not on this quest");
             }
@@ -104,33 +89,44 @@ namespace MAS2
         }
 
         private Zone _zone;
-        public Zone Zone 
+        public Zone Zone
         {
             get => _zone;
             set
             {
-                if(value == null) { throw new ArgumentNullException(nameof(value)); }
+                if (value == null) { throw new ArgumentNullException(nameof(value)); }
                 _zone.Characters.Remove(this);
                 _zone = value;
                 _zone.Characters.Add(this);
+                ZoneId = _zone.Id;
             }
         }
 
-        public Character(string name, Zone zone)
+        public int ZoneId {get; set;}
+
+        public enum AttackType
         {
-            int maxid = 0;
-            foreach (Character character in Characters)
-            {
-                if (character.Id > maxid) { maxid = character.Id; }
-            }
-            _id = maxid+1;
-            _creationDate = DateTime.UtcNow;
+            Physical,
+            Arcane,
+            Fire,
+            Poison,
+            Frost,
+            Magic
+        }
+
+        public Character(string name, Zone zone) : this(name)
+        {
+            _zone = zone ?? throw new ArgumentNullException(nameof(zone));
+            ZoneId = zone.Id;
+        }
+
+        private Character(string name)
+        {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _experiencePoints = 0;
             Equipment = new Equipment(this);
+            EquipmentId = Equipment.Id;
             _charactersQuests = new List<CharacterQuest>();
-            _zone = zone ?? throw new ArgumentNullException(nameof(zone));
-            Characters.Add(this);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace MAS2
+﻿namespace MAS2.GamePieces
 {
     public class Map : Item
     {
@@ -6,9 +6,9 @@
 
         public void AddZone(Zone zone)
         {
-            if(_zones.ContainsKey(zone.Name)) { throw new Exception("Map already contains this zone"); }
+            if (_zones.ContainsKey(zone.Name)) { throw new Exception("Map already contains this zone"); }
             _zones.Add(zone.Name, zone);
-            if (!zone.Maps.Contains(this)) { zone.AddMap(this); }
+            if (zone.Map == null) { zone.Map = (this); }
         }
 
         public Zone? GetZone(string name)
@@ -20,6 +20,8 @@
         {
             return _zones.Keys.ToList();
         }
+
+        public List<Zone> Zones { get => _zones.Values.ToList(); }
 
         public int NumberOfZones => _zones.Count;
 
@@ -36,7 +38,7 @@
                 EquipmentType.Other)
         {
             _zones = new Dictionary<string, Zone>();
-            if(zones != null)
+            if (zones != null)
             {
                 foreach (Zone zone in zones)
                 {
@@ -44,5 +46,6 @@
                 }
             }
         }
+        private Map() : base("",0.0f,"",0,EquipmentType.Other) { }
     }
 }

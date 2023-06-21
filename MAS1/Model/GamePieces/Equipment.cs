@@ -1,8 +1,10 @@
-﻿namespace MAS2
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace MAS2.GamePieces
 {
     public class Equipment
     {
-        public static List<Equipment> Equipments { get; set; } = new List<Equipment>();
+        public int Id;
 
         public int Value => GetValue();
 
@@ -29,7 +31,7 @@
             {
                 sum += Weapon.Value;
             }
-            foreach(Item item in GetItemsInBags())
+            foreach (Item item in GetItemsInBags)
             {
                 sum += item.Value;
             }
@@ -37,77 +39,77 @@
         }
 
         private Item? _helm;
-        public Item? Helm 
+        public Item? Helm
         {
             get => _helm;
             set
             {
-                if(value != null && !value.Type.Equals(Item.EquipmentType.Helm)) 
-                { 
-                    throw new InvalidDataException(String.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Helm.ToString())); 
+                if (value != null && !value.Type.Equals(Item.EquipmentType.Helm))
+                {
+                    throw new ArgumentException(string.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Helm.ToString()));
                 }
                 _helm = value;
-                if(_helm != null) { _helm.Equipment = this; }
+                if (_helm != null) { _helm.HelmEquipment = this; }
             }
         }
 
         private Item? _chest;
-        public Item? Chest 
+        public Item? Chest
         {
             get => _chest;
             set
             {
                 if (value != null && !value.Type.Equals(Item.EquipmentType.Chest))
                 {
-                    throw new InvalidDataException(String.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Chest.ToString()));
+                    throw new ArgumentException(string.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Chest.ToString()));
                 }
                 _chest = value;
-                if(_chest != null) { _chest.Equipment = this; }
+                if (_chest != null) { _chest.ChestEquipment = this; }
             }
         }
 
         private Item? _gloves;
-        public Item? Gloves 
+        public Item? Gloves
         {
             get => _gloves;
             set
             {
                 if (value != null && !value.Type.Equals(Item.EquipmentType.Gloves))
                 {
-                    throw new InvalidDataException(String.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Gloves.ToString()));
+                    throw new ArgumentException(string.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Gloves.ToString()));
                 }
                 _gloves = value;
-                if(_gloves != null) { _gloves.Equipment = this; }
+                if (_gloves != null) { _gloves.GlovesEquipment = this; }
             }
         }
 
         private Item? _boots;
-        public Item? Boots 
+        public Item? Boots
         {
             get => _boots;
             set
             {
                 if (value != null && !value.Type.Equals(Item.EquipmentType.Boots))
                 {
-                    throw new InvalidDataException(String.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Boots.ToString()));
+                    throw new ArgumentException(string.Format("Trying to put not {0} in {1} slot", value.Name, Item.EquipmentType.Boots.ToString()));
                 }
                 _boots = value;
-                if(_boots != null) { _boots.Equipment = this; }
+                if (_boots != null) { _boots.BootsEquipment = this; }
             }
         }
 
         private Item? _weapon;
-        public Item? Weapon 
+        public Item? Weapon
         {
             get => _weapon;
             set
             {
                 if (value != null && !value.Type.Equals(Item.EquipmentType.Weapon))
                 {
-                    throw new InvalidDataException(String.Format("Trying to put {0} in {1} slot", value.Name, Item.EquipmentType.Weapon.ToString()));
+                    throw new ArgumentException(string.Format("Trying to put {0} in {1} slot", value.Name, Item.EquipmentType.Weapon.ToString()));
                 }
                 _weapon = value;
-                if(_weapon != null) { _weapon.Equipment = this; }
+                if (_weapon != null) { _weapon.WeaponEquipment = this; }
             }
         }
 
@@ -131,7 +133,7 @@
 
             public void AddItem(Item item)
             {
-                if(_items.Count < _capacity)
+                if (_items.Count < _capacity)
                 {
                     _items.Add(item);
                     item.Equipment = _equipment;
@@ -149,15 +151,14 @@
 
             public void RemoveItemFromBag(Item item)
             {
-                if(item == null) { throw new ArgumentNullException(nameof(item)); }
-                if (!this.GetItems().Contains(item)) { throw new Exception("Bag does not contain this item"); }
+                if (item == null) { throw new ArgumentNullException(nameof(item)); }
+                if (!GetItems().Contains(item)) { throw new Exception("Bag does not contain this item"); }
                 _items.Remove(item);
-                item.Equipment = null;
             }
 
             public Bag(int capacity, Equipment equipment)
             {
-                if(capacity <= 0)
+                if (capacity <= 0)
                 {
                     throw new ArgumentException("Bag capacity can not be less then 1");
                 }
@@ -167,7 +168,7 @@
             }
         }
 
-        private List<Bag> _bags;
+        private List<Bag> _bags = new List<Bag>();
 
         public void AddNewBag(int capacity)
         {
@@ -176,9 +177,9 @@
 
         public void AddItemToBags(Item item)
         {
-            foreach(Bag bag in _bags)
+            foreach (Bag bag in _bags)
             {
-                if(bag.Capacity > bag.GetNumOfItems())
+                if (bag.Capacity > bag.GetNumOfItems())
                 {
                     bag.AddItem(item);
                     return;
@@ -187,26 +188,27 @@
             Console.WriteLine("There is no space in the bags");
         }
 
-        public List<Item> GetItemsInBags()
-        {
-            List<Item> result = new List<Item>();
-            foreach (Bag bag in _bags)
-            {
-                result.AddRange(bag.GetItems());
+        public List<Item> GetItemsInBags { get {
+                List<Item> result = new List<Item>();
+                foreach (Bag bag in _bags)
+                {
+                    result.AddRange(bag.GetItems());
+                }
+                return result;
             }
-            return result;
-        } 
+        }
+        
 
         public bool IfEquipmentHasItem(Item item)
         {
-            if(item == Helm) { return true; }
+            if (item == Helm) { return true; }
             else if (item == Chest) { return true; }
             else if (item == Gloves) { return true; }
             else if (item == Boots) { return true; }
             else if (item == Weapon) { return true; }
-            foreach(Bag bag in _bags)
+            foreach (Bag bag in _bags)
             {
-                foreach(Item itemInBag in bag.GetItems())
+                foreach (Item itemInBag in bag.GetItems())
                 {
                     if (item == itemInBag) { return true; }
                 }
@@ -216,33 +218,29 @@
 
         public void RemoveItemFromEquipment(Item item)
         {
-            if (item == Helm) 
-            { 
-                item.Equipment = null;
-                Helm = null;
-                return; 
-            }
-            else if (item == Chest) 
+            item.RemoveFromEq();
+            if (item == Helm)
             {
-                item.Equipment = null;
+                Helm = null;
+                return;
+            }
+            else if (item == Chest)
+            {
                 Chest = null;
                 return;
             }
-            else if (item == Gloves) 
+            else if (item == Gloves)
             {
-                item.Equipment = null;
                 Gloves = null;
-                return; 
+                return;
             }
-            else if (item == Boots) 
+            else if (item == Boots)
             {
-                item.Equipment = null;
                 Boots = null;
-                return; 
+                return;
             }
-            else if (item == Weapon) 
+            else if (item == Weapon)
             {
-                item.Equipment = null;
                 Weapon = null;
                 return;
             }
@@ -258,10 +256,9 @@
         }
 
 
-        public Equipment(Item? helm, Item? chest, Item? gloves, Item? boots, Item? weapon, Character character, List<int> capacitiesOfBags, List<Item>? itemsInBags)
+        public Equipment(Item? helm, Item? chest, Item? gloves, Item? boots, Item? weapon, Character character, List<int> capacitiesOfBags, List<Item>? itemsInBags) : this(capacitiesOfBags)
         {
-            if(capacitiesOfBags == null) { throw new ArgumentNullException(nameof(capacitiesOfBags)); }
-            if(itemsInBags != null && itemsInBags.Count > capacitiesOfBags.Sum()) { throw new Exception("List of itmes exceeds the nuber of avaiable slots in bags"); }
+            if (itemsInBags != null && itemsInBags.Count > capacitiesOfBags.Sum()) { throw new Exception("List of itmes exceeds the nuber of avaiable slots in bags"); }
             Character = character ?? throw new ArgumentNullException(nameof(character));
             Helm = helm;
             Chest = chest;
@@ -269,20 +266,26 @@
             Boots = boots;
             Weapon = weapon;
             _bags = new List<Bag>();
-            foreach (int capacity in capacitiesOfBags)
-            {
-                AddNewBag(capacity);
-            }
-            if(itemsInBags != null)
+            if (itemsInBags != null)
             {
                 foreach (Item item in itemsInBags)
                 {
                     AddItemToBags(item);
                 }
             }
-            Equipments.Add(this);
         }
 
         public Equipment(Character character) : this(null, null, null, null, null, character, new List<int> { 10 }, null) { }
+
+        private Equipment(List<int> capacitiesOfBags)
+        {
+            if (capacitiesOfBags == null) { throw new ArgumentNullException(nameof(capacitiesOfBags)); }
+            foreach (int capacity in capacitiesOfBags)
+            {
+                AddNewBag(capacity);
+            }
+        }
+
+        private Equipment() { }
     }
 }

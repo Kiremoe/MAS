@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "MAS2": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\Kuba-komp\\Desktop\\PJATK\\MAS\\MAS2\\MAS1\\App.xaml"
+    }
+  }
+}
